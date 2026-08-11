@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "android executor",
+  "description": "Copies a built Lynx bundle into an Android host project's assets and runs `./gradlew assemble<Variant>`.",
+  "type": "object",
+  "properties": {
+    "bundlePath": {
+      "type": "string",
+      "description": "Path (relative to the workspace root) to the built .lynx.bundle, e.g. packages/web/dist/main.lynx.bundle."
+    },
+    "variant": {
+      "type": "string",
+      "enum": ["debug", "release"],
+      "default": "debug",
+      "description": "Gradle build variant to assemble. release requires a real signing config."
+    },
+    "assetName": {
+      "type": "string",
+      "default": "main.lynx.bundle",
+      "description": "Filename the bundle is copied to under app/src/main/assets/."
+    }
+  },
+  "required": ["bundlePath"]
+}

@@ -15,6 +15,11 @@
       "implementation": "./dist/executors/preview/executor.js",
       "schema": "./src/executors/preview/schema.json",
       "description": "Run `rspeedy preview` for a Lynx app."
+    },
+    "android": {
+      "implementation": "./dist/executors/android/executor.js",
+      "schema": "./src/executors/android/schema.json",
+      "description": "Embed a built Lynx bundle into an Android host project and assemble an APK."
     }
   }
 }

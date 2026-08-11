@@ -44,10 +44,46 @@ Verified end-to-end against the `learn-lynx` app: inference detects the
 project, `nx build` runs `rspeedy build` and gets cached (0.49s on a
 cache hit vs. 35s cold), `nx dev` runs `rspeedy dev` as a continuous task.
 
+## `android` executor
+
+Embeds a built `.lynx.bundle` into a native Android host project (Gradle
+project with the Lynx SDK wired in — see [Lynx's Android integration
+guide](https://lynxjs.org/guide/start/integrate-with-existing-apps?platform=android))
+and assembles an APK:
+
+```json
+{
+  "targets": {
+    "android": {
+      "executor": "@romysaputrasihanandaa/nx-lynx:android",
+      "options": {
+        "bundlePath": "packages/web/dist/main.lynx.bundle",
+        "variant": "debug"
+      },
+      "dependsOn": ["web:build"]
+    }
+  }
+}
+```
+
+Lynx itself doesn't produce a standalone APK — `rspeedy build` only
+produces the JS bundle. This executor is the glue: copy that bundle into
+`app/src/main/assets/`, then run `./gradlew assemble<Variant>`. The
+native Android project (Gradle, `LynxService` init, `LynxView` host
+Activity) still has to exist and be built by hand once; this doesn't
+generate it.
+
+Verified end-to-end against a real Android host project in
+`lynx-monorepo-demo`: `nx run android:android` builds `web`, embeds its
+bundle, and produces an installable `app-debug.apk` with the bundle
+inside. `variant: "release"` needs a real signing config to be useful —
+not set up here.
+
 ## Planned
 
 - [x] `executors` for `build` / `dev` / `preview` wrapping `rspeedy`
 - [x] `createNodes` for inferred targets from `lynx.config.ts`
+- [x] `android` executor to assemble an APK from a native host project
 - [ ] `generators` for scaffolding a new Lynx app (`nx g nx-lynx:app`)
 
 ## License
