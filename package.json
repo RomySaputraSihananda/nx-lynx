@@ -1,0 +1,26 @@
+{
+  "name": "@romysaputrasihanandaa/nx-lynx",
+  "version": "0.0.1",
+  "description": "Nx plugin for Lynx (ByteDance's cross-platform UI framework) — run rspeedy dev/build/preview as cached Nx tasks and scaffold new Lynx apps.",
+  "license": "MIT",
+  "author": "Romy Saputra Sihananda",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RomySaputraSihananda/nx-lynx.git"
+  },
+  "keywords": [
+    "nx",
+    "nx-plugin",
+    "lynx",
+    "lynxjs",
+    "reactlynx",
+    "rspeedy",
+    "monorepo"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}
