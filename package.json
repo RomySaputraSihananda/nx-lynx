@@ -20,7 +20,24 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "executors": "./executors.json",
   "files": [
-    "dist"
-  ]
+    "dist",
+    "executors.json",
+    "src/executors/*/schema.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "peerDependencies": {
+    "@nx/devkit": ">=20.0.0",
+    "nx": ">=20.0.0"
+  },
+  "devDependencies": {
+    "@nx/devkit": "^23.1.1",
+    "@types/node": "^26.2.0",
+    "nx": "^23.1.1",
+    "typescript": "^7.0.2"
+  }
 }

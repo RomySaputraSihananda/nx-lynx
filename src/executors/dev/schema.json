@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "dev executor",
+  "description": "Runs `rspeedy dev` for a Lynx app. Long-running — blocks until the dev server is stopped.",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "build executor",
+  "description": "Runs `rspeedy build` for a Lynx app.",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

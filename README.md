@@ -7,11 +7,28 @@ without hand-writing `run-commands` config in every `project.json`.
 
 ## Status
 
-Early scaffolding — not yet published. See issues for planned work.
+Early — executors work, not yet published to npm.
+
+## Usage
+
+In a Lynx app's `project.json`:
+
+```json
+{
+  "targets": {
+    "dev": { "executor": "@romysaputrasihanandaa/nx-lynx:dev" },
+    "build": { "executor": "@romysaputrasihanandaa/nx-lynx:build" },
+    "preview": { "executor": "@romysaputrasihanandaa/nx-lynx:preview" }
+  }
+}
+```
+
+Then `nx build my-lynx-app` / `nx dev my-lynx-app` run `rspeedy` under the
+hood, with Nx's task graph and caching layered on top.
 
 ## Planned
 
-- [ ] `executors` for `build` / `dev` / `preview` wrapping `rspeedy`
+- [x] `executors` for `build` / `dev` / `preview` wrapping `rspeedy`
 - [ ] `createNodesV2` for inferred targets from `lynx.config.ts`
 - [ ] `generators` for scaffolding a new Lynx app (`nx g nx-lynx:app`)
 

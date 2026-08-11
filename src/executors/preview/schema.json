@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "version": 2,
+  "title": "preview executor",
+  "description": "Runs `rspeedy preview` for a Lynx app. Long-running — blocks until the preview server is stopped.",
+  "type": "object",
+  "properties": {},
+  "required": []
+}

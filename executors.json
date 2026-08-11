@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nrwl/nx/master/packages/nx/schemas/executors.json",
+  "executors": {
+    "dev": {
+      "implementation": "./dist/executors/dev/executor.js",
+      "schema": "./src/executors/dev/schema.json",
+      "description": "Run `rspeedy dev` for a Lynx app."
+    },
+    "build": {
+      "implementation": "./dist/executors/build/executor.js",
+      "schema": "./src/executors/build/schema.json",
+      "description": "Run `rspeedy build` for a Lynx app."
+    },
+    "preview": {
+      "implementation": "./dist/executors/preview/executor.js",
+      "schema": "./src/executors/preview/schema.json",
+      "description": "Run `rspeedy preview` for a Lynx app."
+    }
+  }
+}
