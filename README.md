@@ -8,8 +8,8 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/RomySaputraSihananda/nx-lynx/main/images/nx-lynx-logo-dark.svg">
-    <img src="https://raw.githubusercontent.com/RomySaputraSihananda/nx-lynx/main/images/nx-lynx-logo.svg" width="380">
+    <source media="(prefers-color-scheme: dark)" srcset="images/nx-lynx-logo-dark.svg">
+    <img src="images/nx-lynx-logo.svg" width="380">
   </picture>
 </p>
 
