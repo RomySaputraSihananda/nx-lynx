@@ -5,6 +5,7 @@ import {
   type CreateNodesContext,
   type CreateNodesResult,
 } from '@nx/devkit'
+import { resolveLynxOutputDir } from './utils/resolve-lynx-output.js'
 
 const LYNX_CONFIG_GLOB = '**/lynx.config.{ts,js,mjs,mts,cjs,cts}'
 
@@ -32,16 +33,23 @@ export const createNodes: CreateNodes<NxLynxPluginOptions> = [
  */
 export const createNodesV2 = createNodes
 
-function createNodesInternal(
+async function createNodesInternal(
   configFilePath: string,
   options: NxLynxPluginOptions | undefined,
-  _context: CreateNodesContext,
-): CreateNodesResult {
+  context: CreateNodesContext,
+): Promise<CreateNodesResult> {
   const projectRoot = dirname(configFilePath)
 
   const buildTargetName = options?.buildTargetName ?? 'build'
   const devTargetName = options?.devTargetName ?? 'dev'
   const previewTargetName = options?.previewTargetName ?? 'preview'
+
+  // Reflects whatever `output.distPath.root` the project actually
+  // configured in lynx.config.ts (default 'dist') instead of assuming
+  // every project left it alone — a wrong path here means Nx caches the
+  // build under a path nothing gets written to, so a "cache hit" silently
+  // restores nothing.
+  const outputDir = await resolveLynxOutputDir(configFilePath, context.workspaceRoot)
 
   return {
     projects: {
@@ -49,7 +57,7 @@ function createNodesInternal(
         targets: {
           [buildTargetName]: {
             executor: '@romysaputrasihanandaa/nx-lynx:build',
-            outputs: [`{projectRoot}/dist`],
+            outputs: [`{projectRoot}/${outputDir}`],
             cache: true,
           },
           [devTargetName]: {
