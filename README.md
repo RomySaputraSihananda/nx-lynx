@@ -6,7 +6,12 @@
 
 > Nx plugin adding first-class support for [Lynx](https://lynxjs.org) — ByteDance's cross-platform UI framework — in your Nx workspace
 
-<p align="center"><img src="https://raw.githubusercontent.com/RomySaputraSihananda/nx-lynx/main/images/nx-lynx-logo.svg" width="450"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/RomySaputraSihananda/nx-lynx/main/images/nx-lynx-logo-dark.svg">
+    <img src="https://raw.githubusercontent.com/RomySaputraSihananda/nx-lynx/main/images/nx-lynx-logo.svg" width="380">
+  </picture>
+</p>
 
 ## Contents
 
