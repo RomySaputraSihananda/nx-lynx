@@ -1,4 +1,10 @@
 node_modules/
 dist/
+.spec-out/
 *.log
 .env
+*.tgz
+
+# Fake @lynx-js/rspeedy fixture the tests need — not a real install.
+!src/utils/__fixtures__/**/node_modules/
+!src/utils/__fixtures__/**/node_modules/**

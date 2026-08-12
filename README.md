@@ -7,7 +7,8 @@ without hand-writing `run-commands` config in every `project.json`.
 
 ## Status
 
-Early — executors work, not yet published to npm.
+Early — executors, inference, and `android` all work and are covered by
+tests; not yet published to npm.
 
 ## Usage
 
@@ -36,8 +37,11 @@ for any project with a `lynx.config.ts` once it's registered in `nx.json`:
 ```
 
 `dev`/`preview` are marked `continuous: true` (long-running dev servers);
-`build` is cached (`outputs: ["{projectRoot}/dist"]`). Target names are
-configurable via plugin options (`buildTargetName`, `devTargetName`,
+`build` is cached, with `outputs` resolved from the project's own
+`lynx.config.ts` (`output.distPath.root`, default `'dist'`) rather than
+assumed — a project that customizes it still caches correctly instead of
+Nx restoring an empty `dist/` that nothing ever wrote to. Target names
+are configurable via plugin options (`buildTargetName`, `devTargetName`,
 `previewTargetName`) in case they'd otherwise clash with existing targets.
 
 Verified end-to-end against the `learn-lynx` app: inference detects the
@@ -79,11 +83,25 @@ bundle, and produces an installable `app-debug.apk` with the bundle
 inside. `variant: "release"` needs a real signing config to be useful —
 not set up here.
 
+## Testing
+
+```
+npm test
+```
+
+Runs the unit tests (`node --test`, no test framework dependency) against
+a fake `@lynx-js/rspeedy` fixture — no network, no real rspeedy install
+needed. Separately, `npm pack` was verified end-to-end: installing the
+resulting tarball (a real copy, not the `file:` symlink used during dev)
+into a throwaway workspace and running `nx show project` confirmed
+inference still resolves correctly from a genuine install.
+
 ## Planned
 
 - [x] `executors` for `build` / `dev` / `preview` wrapping `rspeedy`
 - [x] `createNodes` for inferred targets from `lynx.config.ts`
 - [x] `android` executor to assemble an APK from a native host project
+- [x] unit tests + a verified `npm pack` install
 - [ ] `generators` for scaffolding a new Lynx app (`nx g nx-lynx:app`)
 
 ## License
