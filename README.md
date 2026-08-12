@@ -61,7 +61,7 @@ and assembles an APK:
     "android": {
       "executor": "@romysaputrasihanandaa/nx-lynx:android",
       "options": {
-        "bundlePath": "packages/web/dist/main.lynx.bundle",
+        "lynxApp": "web",
         "variant": "debug"
       },
       "dependsOn": ["web:build"]
@@ -76,6 +76,11 @@ produces the JS bundle. This executor is the glue: copy that bundle into
 native Android project (Gradle, `LynxService` init, `LynxView` host
 Activity) still has to exist and be built by hand once; this doesn't
 generate it.
+
+`lynxApp` names the Lynx project to embed rather than a hand-written
+path — the actual bundle location is resolved the same way `build`'s
+own `outputs` are (reading that project's `lynx.config.ts`), so it can't
+drift out of sync if that project changes its output directory.
 
 Verified end-to-end against a real Android host project in
 `lynx-monorepo-demo`: `nx run android:android` builds `web`, embeds its

@@ -1,11 +1,15 @@
 import { copyFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import type { ExecutorContext } from '@nx/devkit'
+import { findLynxConfigFile } from '../../utils/lynx-config-file.js'
+import { resolveLynxOutputDir } from '../../utils/resolve-lynx-output.js'
 import { runGradle } from '../../utils/run-gradle.js'
 
 export interface AndroidExecutorSchema {
-  /** Path (relative to the workspace root) to the built `.lynx.bundle` to embed, e.g. `packages/web/dist/main.lynx.bundle`. */
-  bundlePath: string
+  /** Name of the Lynx (rspeedy) project whose built bundle should be embedded — e.g. `web`. */
+  lynxApp: string
+  /** Bundle filename to look for under that project's resolved output dir. */
+  bundleFileName?: string
   /** Gradle build variant to assemble. Defaults to `debug` — `release` needs a real signing config to be useful. */
   variant?: 'debug' | 'release'
   /** Filename the bundle is copied to under `app/src/main/assets/`. Must match what the host Activity loads. */
@@ -16,6 +20,12 @@ export interface AndroidExecutorSchema {
  * Copies a built Lynx bundle into the Android host project's assets, then
  * runs `./gradlew assemble<Variant>` — the two steps `nx build` for the
  * Lynx app itself doesn't know or need to know about.
+ *
+ * Takes a Lynx project *name* (`lynxApp`) rather than a hand-written
+ * bundle path — the actual output directory is resolved the same way
+ * `createNodes` resolves it for that project's own `build` target
+ * (reading its `lynx.config.ts`), so a hardcoded path here can't drift
+ * out of sync with wherever that project actually configured its output.
  */
 export default async function androidExecutor(
   options: AndroidExecutorSchema,
@@ -31,15 +41,30 @@ export default async function androidExecutor(
     throw new Error(`Could not resolve the root of project "${projectName}".`)
   }
 
-  if (!options.bundlePath) {
-    throw new Error('nx-lynx:android requires a "bundlePath" option pointing at the built .lynx.bundle.')
+  if (!options.lynxApp) {
+    throw new Error('nx-lynx:android requires a "lynxApp" option naming the Lynx (rspeedy) project to embed.')
   }
 
-  const cwd = `${context.root}/${projectRoot}`
-  const variant = options.variant ?? 'debug'
-  const assetName = options.assetName ?? 'main.lynx.bundle'
+  const lynxProjectRoot = context.projectsConfigurations?.projects[options.lynxApp]?.root
+  if (lynxProjectRoot === undefined) {
+    throw new Error(`nx-lynx:android could not find a project named "${options.lynxApp}" in the workspace.`)
+  }
 
-  const src = `${context.root}/${options.bundlePath}`
+  const lynxConfigPath = findLynxConfigFile(context.root, lynxProjectRoot)
+  if (lynxConfigPath === null) {
+    throw new Error(
+      `nx-lynx:android could not find a lynx.config.* file in "${lynxProjectRoot}" (project "${options.lynxApp}").`,
+    )
+  }
+
+  const outputDir = await resolveLynxOutputDir(lynxConfigPath, context.root)
+  const bundleFileName = options.bundleFileName ?? 'main.lynx.bundle'
+  const src = join(context.root, lynxProjectRoot, outputDir, bundleFileName)
+
+  const cwd = join(context.root, projectRoot)
+  const variant = options.variant ?? 'debug'
+  const assetName = options.assetName ?? bundleFileName
+
   const assetsDir = join(cwd, 'app', 'src', 'main', 'assets')
   await mkdir(assetsDir, { recursive: true })
   await copyFile(src, join(assetsDir, assetName))

@@ -5,9 +5,8 @@ import {
   type CreateNodesContext,
   type CreateNodesResult,
 } from '@nx/devkit'
+import { LYNX_CONFIG_GLOB } from './utils/lynx-config-file.js'
 import { resolveLynxOutputDir } from './utils/resolve-lynx-output.js'
-
-const LYNX_CONFIG_GLOB = '**/lynx.config.{ts,js,mjs,mts,cjs,cts}'
 
 export interface NxLynxPluginOptions {
   buildTargetName?: string
