@@ -9,7 +9,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="images/nx-lynx-logo-dark.svg">
-    <img src="images/nx-lynx-logo.svg" width="380">
+    <img src="images/nx-lynx-logo.svg" width="450">
   </picture>
 </p>
 
