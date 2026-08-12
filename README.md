@@ -1,6 +1,7 @@
 # nx-lynx
 
 [![npm version](https://img.shields.io/npm/v/@romysaputrasihanandaa/nx-lynx?style=flat-square)](https://www.npmjs.com/package/@romysaputrasihanandaa/nx-lynx)
+[![publish](https://img.shields.io/github/actions/workflow/status/RomySaputraSihananda/nx-lynx/publish.yml?label=publish&style=flat-square)](https://github.com/RomySaputraSihananda/nx-lynx/actions/workflows/publish.yml)
 [![lynx version](https://img.shields.io/badge/lynx-stable-22d3ee?style=flat-square)](https://lynxjs.org)
 [![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE)
 
@@ -20,6 +21,7 @@
 - [Usage](#usage)
 - [Executors](#executors)
 - [Testing](#testing)
+- [Releasing](#releasing)
 - [Compatibility with Nx](#compatibility-with-nx)
 - [Roadmap](#roadmap)
 
@@ -128,6 +130,19 @@ real (heavy) rspeedy install needed.
 tarball (a real copy, not the `file:` symlink used during development)
 into a throwaway workspace and running `nx show project` confirmed
 inference still resolves correctly from a genuine install.
+
+## Releasing
+
+CI publishes automatically on a version tag — [`.github/workflows/publish.yml`](.github/workflows/publish.yml)
+builds, tests, checks the tag matches `package.json`'s version, then
+runs `npm publish --provenance`. Requires an `NPM_TOKEN` repo secret
+(an npm **automation** token, so it isn't blocked by 2FA) to be set
+once under *Settings → Secrets and variables → Actions*.
+
+```
+npm version 0.1.0   # bumps package.json, commits, tags v0.1.0
+git push --follow-tags
+```
 
 ## Compatibility with Nx
 

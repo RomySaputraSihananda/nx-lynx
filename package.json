@@ -1,6 +1,6 @@
 {
   "name": "@romysaputrasihanandaa/nx-lynx",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Nx plugin for Lynx (ByteDance's cross-platform UI framework) — run rspeedy dev/build/preview as cached Nx tasks and scaffold new Lynx apps.",
   "license": "MIT",
   "author": "Romy Saputra Sihananda",
@@ -29,7 +29,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "tsc -p tsconfig.spec.json && node --test '.spec-out/**/*.test.js'"
+    "test": "tsc -p tsconfig.spec.json && node --test '.spec-out/**/*.test.js'",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   },
   "peerDependencies": {
     "@nx/devkit": ">=20.0.0",
