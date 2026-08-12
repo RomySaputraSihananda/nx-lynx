@@ -1,0 +1,42 @@
+<svg width="900" height="260" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="nx-lynx logo">
+  <title>nx-lynx</title>
+  <defs>
+    <linearGradient id="badge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#0a2540" />
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: an abstract lynx-face mark on a rounded badge -->
+  <rect x="20" y="30" width="200" height="200" rx="34" fill="url(#badge)" />
+
+  <!-- ear tufts -->
+  <path d="M78,68 L64,34" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  <path d="M142,68 L156,34" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+
+  <!-- ears -->
+  <polygon points="60,108 84,58 96,112" fill="#ffffff" />
+  <polygon points="160,108 136,58 124,112" fill="#ffffff" />
+
+  <!-- face -->
+  <ellipse cx="120" cy="163" rx="58" ry="50" fill="#ffffff" />
+
+  <!-- cheek tufts -->
+  <path d="M66,178 L38,196" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+  <path d="M174,178 L202,196" stroke="#ffffff" stroke-width="6" stroke-linecap="round" />
+
+  <!-- eyes -->
+  <circle cx="99" cy="157" r="7" fill="#0a2540" />
+  <circle cx="141" cy="157" r="7" fill="#0a2540" />
+
+  <!-- nose -->
+  <polygon points="120,172 112,182 128,182" fill="#0a2540" />
+
+  <!-- Wordmark -->
+  <text x="264" y="152" font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace" font-size="66" font-weight="700">
+    <tspan fill="#64748b">nx-</tspan><tspan fill="#22d3ee">lynx</tspan>
+  </text>
+  <text x="266" y="196" font-family="-apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="22" fill="#94a3b8">
+    Nx plugin for Lynx — dev / build / preview / android
+  </text>
+</svg>

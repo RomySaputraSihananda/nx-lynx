@@ -1,18 +1,53 @@
-# @romysaputrasihanandaa/nx-lynx
+# nx-lynx
 
-Nx plugin for [Lynx](https://lynxjs.org) — ByteDance's cross-platform UI
-framework. Wraps the `rspeedy` CLI so Lynx apps get Nx task caching, the
-project graph, and (eventually) generators for scaffolding new apps —
-without hand-writing `run-commands` config in every `project.json`.
+[![npm version](https://img.shields.io/npm/v/@romysaputrasihanandaa/nx-lynx?style=flat-square)](https://www.npmjs.com/package/@romysaputrasihanandaa/nx-lynx)
+[![lynx version](https://img.shields.io/badge/lynx-stable-22d3ee?style=flat-square)](https://lynxjs.org)
+[![license](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](./LICENSE)
 
-## Status
+> Nx plugin adding first-class support for [Lynx](https://lynxjs.org) — ByteDance's cross-platform UI framework — in your Nx workspace
 
-Early — executors, inference, and `android` all work and are covered by
-tests; not yet published to npm.
+<p align="center"><img src="https://raw.githubusercontent.com/RomySaputraSihananda/nx-lynx/main/images/nx-lynx-logo.svg" width="450"></p>
+
+## Contents
+
+- [Features](#features)
+- [Setup](#setup)
+- [Usage](#usage)
+- [Executors](#executors)
+- [Testing](#testing)
+- [Compatibility with Nx](#compatibility-with-nx)
+- [Roadmap](#roadmap)
+
+## Features
+
+- ✅ Zero-config **project detection** — any project with a `lynx.config.ts` gets `dev`/`build`/`preview` targets automatically, no `project.json` required
+- ✅ **Correct caching** — `build`'s cached `outputs` are read from the project's actual `rspeedy` config instead of assumed, so a customized output directory doesn't silently break cache restores
+- ✅ **Android packaging** — embed a built Lynx bundle into a native Android host project and assemble an APK, wired to the Lynx project by name (not a hand-written path)
+- ✅ Configurable target names, so `dev`/`build`/`preview` can be renamed to avoid clashing with existing targets
+
+## Setup
+
+This plugin wraps [`rspeedy`](https://lynxjs.org/rspeedy/) (Lynx's own build CLI), so any project it manages needs `rspeedy` installed already — typically via [`create-rspeedy`](https://lynxjs.org/guide/start/quick-start.html).
+
+Install the plugin:
+
+```
+npm install @romysaputrasihanandaa/nx-lynx --save-dev
+```
+
+Then register it in `nx.json`:
+
+```json
+{
+  "plugins": ["@romysaputrasihanandaa/nx-lynx"]
+}
+```
+
+Any project with a `lynx.config.{ts,js,mjs,mts,cjs,cts}` now automatically gets `dev`, `build`, and `preview` targets — run `nx show project <name>` to confirm.
 
 ## Usage
 
-In a Lynx app's `project.json`:
+Prefer explicit config over inference, or need to override an option? Wire the executors directly in `project.json` instead:
 
 ```json
 {
@@ -24,36 +59,27 @@ In a Lynx app's `project.json`:
 }
 ```
 
-Then `nx build my-lynx-app` / `nx dev my-lynx-app` run `rspeedy` under the
-hood, with Nx's task graph and caching layered on top.
+Either way, `nx build my-lynx-app` / `nx dev my-lynx-app` run `rspeedy` under the hood, with Nx's task graph and caching layered on top. `dev`/`preview` are marked `continuous: true` (long-running dev servers); `build` is cached.
 
-Or skip `project.json` entirely — the plugin infers `build`/`dev`/`preview`
-for any project with a `lynx.config.ts` once it's registered in `nx.json`:
+## Executors
 
-```json
-{
-  "plugins": ["@romysaputrasihanandaa/nx-lynx"]
-}
-```
+| Executor  | Options                                                                                                            | Description                                                                       |
+| --------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `dev`     | —                                                                                                                    | Runs `rspeedy dev`. Continuous.                                                    |
+| `build`   | —                                                                                                                    | Runs `rspeedy build`. Cached; `outputs` resolved from the project's own config.    |
+| `preview` | —                                                                                                                    | Runs `rspeedy preview`. Continuous; depends on `build`.                            |
+| `android` | `lynxApp` (required) · `bundleFileName` · `variant` (`debug` &#124; `release`, default `debug`) · `assetName`       | Embeds a built Lynx bundle into a native Android host project and runs Gradle.      |
 
-`dev`/`preview` are marked `continuous: true` (long-running dev servers);
-`build` is cached, with `outputs` resolved from the project's own
-`lynx.config.ts` (`output.distPath.root`, default `'dist'`) rather than
-assumed — a project that customizes it still caches correctly instead of
-Nx restoring an empty `dist/` that nothing ever wrote to. Target names
-are configurable via plugin options (`buildTargetName`, `devTargetName`,
-`previewTargetName`) in case they'd otherwise clash with existing targets.
+### `android` in depth
 
-Verified end-to-end against the `learn-lynx` app: inference detects the
-project, `nx build` runs `rspeedy build` and gets cached (0.49s on a
-cache hit vs. 35s cold), `nx dev` runs `rspeedy dev` as a continuous task.
-
-## `android` executor
-
-Embeds a built `.lynx.bundle` into a native Android host project (Gradle
-project with the Lynx SDK wired in — see [Lynx's Android integration
-guide](https://lynxjs.org/guide/start/integrate-with-existing-apps?platform=android))
-and assembles an APK:
+Lynx itself doesn't produce a standalone APK — `rspeedy build` only
+produces the JS bundle. This executor is the glue: copy that bundle into
+`app/src/main/assets/`, then run `./gradlew assemble<Variant>`. The
+native Android project (Gradle, `LynxService` init, a `LynxView` host
+Activity) still has to exist and be built by hand once — see [Lynx's
+Android integration
+guide](https://lynxjs.org/guide/start/integrate-with-existing-apps?platform=android)
+— this executor doesn't generate it.
 
 ```json
 {
@@ -70,23 +96,18 @@ and assembles an APK:
 }
 ```
 
-Lynx itself doesn't produce a standalone APK — `rspeedy build` only
-produces the JS bundle. This executor is the glue: copy that bundle into
-`app/src/main/assets/`, then run `./gradlew assemble<Variant>`. The
-native Android project (Gradle, `LynxService` init, `LynxView` host
-Activity) still has to exist and be built by hand once; this doesn't
-generate it.
-
 `lynxApp` names the Lynx project to embed rather than a hand-written
 path — the actual bundle location is resolved the same way `build`'s
 own `outputs` are (reading that project's `lynx.config.ts`), so it can't
 drift out of sync if that project changes its output directory.
 
-Verified end-to-end against a real Android host project in
-`lynx-monorepo-demo`: `nx run android:android` builds `web`, embeds its
-bundle, and produces an installable `app-debug.apk` with the bundle
-inside. `variant: "release"` needs a real signing config to be useful —
-not set up here.
+`variant: "release"` needs a real signing config on the Android project
+to be useful — this plugin never generates or auto-signs a keystore.
+
+Verified end-to-end against a real Android host project: `nx run
+android:android` builds the Lynx app, embeds its bundle, and produces an
+installable `app-debug.apk` — confirmed rendering correctly on a
+physical device, not just a successful Gradle exit code.
 
 ## Testing
 
@@ -94,21 +115,30 @@ not set up here.
 npm test
 ```
 
-Runs the unit tests (`node --test`, no test framework dependency) against
-a fake `@lynx-js/rspeedy` fixture — no network, no real rspeedy install
-needed. Separately, `npm pack` was verified end-to-end: installing the
-resulting tarball (a real copy, not the `file:` symlink used during dev)
+Runs the unit tests (`node --test`, no test framework dependency)
+against a hand-rolled fake `@lynx-js/rspeedy` fixture — no network, no
+real (heavy) rspeedy install needed.
+
+`npm pack` was also verified end-to-end: installing the resulting
+tarball (a real copy, not the `file:` symlink used during development)
 into a throwaway workspace and running `nx show project` confirmed
 inference still resolves correctly from a genuine install.
 
-## Planned
+## Compatibility with Nx
+
+| Plugin Version | Nx Workspace version |
+| --------------- | --------------------- |
+| `>=0.1.x`        | `>=20.x.x`             |
+
+## Roadmap
 
 - [x] `executors` for `build` / `dev` / `preview` wrapping `rspeedy`
 - [x] `createNodes` for inferred targets from `lynx.config.ts`
 - [x] `android` executor to assemble an APK from a native host project
 - [x] unit tests + a verified `npm pack` install
 - [ ] `generators` for scaffolding a new Lynx app (`nx g nx-lynx:app`)
+- [ ] a generator to scaffold the Android host project itself
 
 ## License
 
-MIT
+Copyright (c) 2026-present Romy Saputra Sihananda. Licensed under the MIT License (MIT)
